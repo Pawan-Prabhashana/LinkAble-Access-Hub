@@ -71,6 +71,14 @@ export interface IssueRequest {
   aiAnalyzedAt?: string;
   suggestedAction?: string;
 
+  // ── Phase 4: SLA + Escalation ────────────────────────────────────────────
+  slaTargetAt?: string;
+  slaStatus?: string;              // ON_TRACK | AT_RISK | BREACHED | COMPLETED
+  slaMinutesRemaining?: number;    // negative = overdue
+  escalationLevel?: string;        // NONE | TEAM_LEAD | OPERATIONS_MANAGER | EMERGENCY_RESPONSE
+  escalatedAt?: string;
+  lastEscalationReason?: string;
+
   // ── Phase 3: Copilot / agentic workflow ──────────────────────────────────
   copilotSummary?: string;
   copilotSuggestedActions?: string[];

@@ -109,6 +109,47 @@ export const PRIORITY_LABELS: Record<string, string> = {
   PENDING_REVIEW: 'Pending Review',
 };
 
+// ── SLA status ────────────────────────────────────────────────────────────────
+
+export const SLA_STATUS_LABELS: Record<string, string> = {
+  ON_TRACK:  'On Track',
+  AT_RISK:   'At Risk',
+  BREACHED:  'SLA Breached',
+  COMPLETED: 'Completed',
+};
+
+export const SLA_STATUS_COLORS: Record<string, string> = {
+  ON_TRACK:  'bg-green-100 text-green-700 ring-1 ring-green-200',
+  AT_RISK:   'bg-amber-100 text-amber-700 ring-1 ring-amber-200',
+  BREACHED:  'bg-red-100 text-red-700 ring-1 ring-red-300',
+  COMPLETED: 'bg-slate-100 text-slate-500 ring-1 ring-slate-200',
+};
+
+// ── Escalation ────────────────────────────────────────────────────────────────
+
+export const ESCALATION_LABELS: Record<string, string> = {
+  NONE:                 'None',
+  TEAM_LEAD:            'Team Lead',
+  OPERATIONS_MANAGER:   'Operations Manager',
+  EMERGENCY_RESPONSE:   'Emergency Response',
+};
+
+export const ESCALATION_COLORS: Record<string, string> = {
+  NONE:               '',
+  TEAM_LEAD:          'bg-amber-100 text-amber-700 ring-1 ring-amber-200',
+  OPERATIONS_MANAGER: 'bg-orange-100 text-orange-700 ring-1 ring-orange-200',
+  EMERGENCY_RESPONSE: 'bg-red-100 text-red-700 ring-1 ring-red-300',
+};
+
+// ── Alert severity ────────────────────────────────────────────────────────────
+
+export const ALERT_SEVERITY_COLORS: Record<string, string> = {
+  INFO:     'bg-blue-50 text-blue-700 border-blue-200',
+  WARNING:  'bg-amber-50 text-amber-700 border-amber-200',
+  HIGH:     'bg-orange-50 text-orange-700 border-orange-200',
+  CRITICAL: 'bg-red-50 text-red-700 border-red-200',
+};
+
 export const STATUS_LABELS: Record<string, string> = {
   NEW: 'New',
   ASSIGNED: 'Assigned',

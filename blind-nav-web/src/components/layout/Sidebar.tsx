@@ -3,25 +3,24 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  LayoutDashboard,
-  ClipboardList,
-  PlusCircle,
-  Settings,
-  Accessibility,
-  ChevronRight,
+  LayoutDashboard, ClipboardList, PlusCircle,
+  Settings, Accessibility, ChevronRight, Bell,
 } from 'lucide-react';
-
-const navItems = [
-  { label: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { label: 'All Requests', href: '/requests', icon: ClipboardList },
-  { label: 'New Request', href: '/requests/new', icon: PlusCircle },
-];
+import { useAlerts } from '@/hooks/useAlerts';
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { unreadCount } = useAlerts();
 
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href);
+
+  const navItems = [
+    { label: 'Dashboard',    href: '/',             icon: LayoutDashboard },
+    { label: 'All Requests', href: '/requests',      icon: ClipboardList   },
+    { label: 'New Request',  href: '/requests/new',  icon: PlusCircle      },
+    { label: 'Alerts',       href: '/alerts',        icon: Bell, badge: unreadCount > 0 ? unreadCount : undefined },
+  ];
 
   return (
     <aside className="fixed inset-y-0 left-0 z-40 flex w-60 flex-col bg-slate-900">
@@ -41,7 +40,7 @@ export default function Sidebar() {
         <p className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-widest text-slate-500">
           Operations
         </p>
-        {navItems.map(({ label, href, icon: Icon }) => {
+        {navItems.map(({ label, href, icon: Icon, badge }) => {
           const active = isActive(href);
           return (
             <Link
@@ -57,7 +56,14 @@ export default function Sidebar() {
                 <Icon className={`h-4 w-4 ${active ? 'text-blue-400' : 'text-slate-500 group-hover:text-slate-300'}`} />
                 {label}
               </span>
-              {active && <ChevronRight className="h-3.5 w-3.5 text-slate-500" />}
+              <span className="flex items-center gap-1.5">
+                {badge != null && (
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                    {badge > 9 ? '9+' : badge}
+                  </span>
+                )}
+                {active && !badge && <ChevronRight className="h-3.5 w-3.5 text-slate-500" />}
+              </span>
             </Link>
           );
         })}
@@ -71,9 +77,9 @@ export default function Sidebar() {
           </div>
           <div className="flex-1 truncate">
             <p className="truncate text-xs font-semibold text-white">Access Officer</p>
-            <p className="truncate text-[10px] text-slate-400">Phase 1 · Hackathon</p>
+            <p className="truncate text-[10px] text-slate-400">Phase 4 · Hackathon</p>
           </div>
-          <Settings className="h-4 w-4 text-slate-500 hover:text-slate-300 cursor-pointer" />
+          <Settings className="h-4 w-4 cursor-pointer text-slate-500 hover:text-slate-300" />
         </div>
       </div>
     </aside>

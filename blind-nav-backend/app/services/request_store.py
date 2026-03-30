@@ -33,14 +33,13 @@ def _now() -> str:
 
 
 def _backfill(r: dict) -> dict:
-    """Add any fields that older stored records may not have."""
     r.setdefault("notes", [])
     r.setdefault("assignedTo", None)
     r.setdefault("location", None)
     r.setdefault("reportedBy", None)
     r.setdefault("updatedAt", None)
     r.setdefault("transcript", None)
-    # Phase 2 AI fields
+    # Phase 2
     r.setdefault("aiSummary", None)
     r.setdefault("aiCategory", None)
     r.setdefault("aiPriority", None)
@@ -50,7 +49,7 @@ def _backfill(r: dict) -> dict:
     r.setdefault("aiEngine", None)
     r.setdefault("aiAnalyzedAt", None)
     r.setdefault("suggestedAction", None)
-    # Phase 3 Copilot fields
+    # Phase 3
     r.setdefault("copilotSummary", None)
     r.setdefault("copilotSuggestedActions", None)
     r.setdefault("copilotResolutionSteps", None)
@@ -63,6 +62,27 @@ def _backfill(r: dict) -> dict:
     r.setdefault("copilotDecisionTrace", None)
     r.setdefault("copilotEngine", None)
     r.setdefault("copilotGeneratedAt", None)
+    # Phase 4
+    r.setdefault("slaTargetAt", None)
+    r.setdefault("slaStatus", None)
+    r.setdefault("slaMinutesRemaining", None)
+    r.setdefault("escalationLevel", "NONE")
+    r.setdefault("escalatedAt", None)
+    r.setdefault("lastEscalationReason", None)
+    return r
+
+
+def _enrich_sla(r: dict) -> dict:
+    """Recompute slaStatus + slaMinutesRemaining on every fetch (always fresh)."""
+    from app.services.sla_service import compute_sla_status
+    status, minutes = compute_sla_status(
+        r.get("slaTargetAt"),
+        r.get("status", "NEW"),
+        r.get("priority", "MEDIUM"),
+        r.get("timestamp", _now()),
+    )
+    r["slaStatus"] = status
+    r["slaMinutesRemaining"] = minutes
     return r
 
 
@@ -74,8 +94,9 @@ def create_request(data: IssueRequestCreate) -> IssueRequest:
         title = "Untitled Report"
 
     source = data.source or ("mobile_voice_report" if transcript else "officer_manual_entry")
+    created_at = _now()
 
-    # ── Phase 2: AI analysis ──────────────────────────────────────────────────
+    # Phase 2: AI analysis
     ai_result: Optional[AIAnalysisResult] = None
     analysis_text = data.description or transcript or ""
     if analysis_text.strip() or title not in ("Untitled Report",):
@@ -89,7 +110,12 @@ def create_request(data: IssueRequestCreate) -> IssueRequest:
         except Exception as exc:
             print(f"[request_store] AI analysis failed: {exc}")
 
-    # ── Phase 3: Copilot generation ───────────────────────────────────────────
+    # Phase 4: compute SLA target (use AI priority if user didn't set one)
+    effective_priority = data.priority or (ai_result.predictedPriority if ai_result else "PENDING_REVIEW")
+    from app.services.sla_service import compute_sla_target
+    sla_target_at = compute_sla_target(effective_priority, created_at)
+
+    # Phase 3: Copilot
     copilot_result: Optional[CopilotResult] = None
     if analysis_text.strip():
         try:
@@ -123,9 +149,9 @@ def create_request(data: IssueRequestCreate) -> IssueRequest:
         reportedBy=data.reportedBy,
         assignedTo=None,
         notes=[],
-        timestamp=_now(),
+        timestamp=created_at,
         updatedAt=None,
-        # AI fields
+        # AI
         aiSummary=ai_result.aiSummary if ai_result else None,
         aiCategory=ai_result.predictedCategory if ai_result else None,
         aiPriority=ai_result.predictedPriority if ai_result else None,
@@ -133,9 +159,9 @@ def create_request(data: IssueRequestCreate) -> IssueRequest:
         aiConfidence=ai_result.confidence if ai_result else None,
         aiReason=ai_result.reason if ai_result else None,
         aiEngine=ai_result.engine if ai_result else None,
-        aiAnalyzedAt=_now() if ai_result else None,
+        aiAnalyzedAt=created_at if ai_result else None,
         suggestedAction=None,
-        # Copilot fields
+        # Copilot
         copilotSummary=copilot_result.copilotSummary if copilot_result else None,
         copilotSuggestedActions=copilot_result.copilotSuggestedActions if copilot_result else None,
         copilotResolutionSteps=copilot_result.copilotResolutionSteps if copilot_result else None,
@@ -148,23 +174,65 @@ def create_request(data: IssueRequestCreate) -> IssueRequest:
         copilotDecisionTrace=copilot_result.copilotDecisionTrace if copilot_result else None,
         copilotEngine=copilot_result.copilotEngine if copilot_result else None,
         copilotGeneratedAt=copilot_result.copilotGeneratedAt if copilot_result else None,
+        # SLA / Escalation
+        slaTargetAt=sla_target_at,
+        slaStatus=None,  # Will be computed on fetch
+        slaMinutesRemaining=None,
+        escalationLevel="NONE",
+        escalatedAt=None,
+        lastEscalationReason=None,
     )
 
     existing = _load()
     existing.append(record.model_dump())
     _save(existing)
+
+    # Immediately fire a CRITICAL alert if applicable
+    _fire_creation_alert(record)
+
     return record
+
+
+def _fire_creation_alert(record: IssueRequest) -> None:
+    """Create an immediate alert when a CRITICAL or EMERGENCY request is created."""
+    from app.services.alert_store import create_alert
+    from app.services.sla_service import make_alert, get_sla_minutes
+
+    if record.priority == "CRITICAL" or record.aiCategory == "EMERGENCY_SUPPORT":
+        sla_min = get_sla_minutes(record.priority)
+        create_alert(make_alert(
+            "CRITICAL_REQUEST_CREATED",
+            "CRITICAL",
+            f"Critical Request Created — {record.title[:50]}",
+            f"A CRITICAL priority request has been submitted. SLA: {int(sla_min)} minutes. Immediate response required.",
+            record.id,
+        ))
+    elif record.priority == "HIGH":
+        create_alert(make_alert(
+            "CRITICAL_REQUEST_CREATED",
+            "HIGH",
+            f"High Priority Request — {record.title[:50]}",
+            f"A HIGH priority accessibility request has been submitted. SLA window: {int(get_sla_minutes(record.priority))} minutes.",
+            record.id,
+        ))
 
 
 def get_all_requests() -> list[IssueRequest]:
     raw = _load()
-    return [IssueRequest(**_backfill(r)) for r in raw]
+    result = []
+    for r in raw:
+        _backfill(r)
+        _enrich_sla(r)
+        result.append(IssueRequest(**r))
+    return result
 
 
 def get_request_by_id(request_id: str) -> Optional[IssueRequest]:
     for r in _load():
         if r.get("id") == request_id:
-            return IssueRequest(**_backfill(r))
+            _backfill(r)
+            _enrich_sla(r)
+            return IssueRequest(**r)
     return None
 
 
@@ -180,6 +248,9 @@ def update_request(request_id: str, data: IssueRequestUpdate) -> Optional[IssueR
             r["assignedTo"] = data.assignedTo
         if data.priority is not None:
             r["priority"] = data.priority
+            # Recompute SLA target when priority changes
+            from app.services.sla_service import compute_sla_target
+            r["slaTargetAt"] = compute_sla_target(data.priority, r.get("timestamp", _now()))
 
         if data.noteText:
             note = Note(
@@ -193,6 +264,7 @@ def update_request(request_id: str, data: IssueRequestUpdate) -> Optional[IssueR
 
         r["updatedAt"] = _now()
         _backfill(r)
+        _enrich_sla(r)
         records[i] = r
         _save(records)
         return IssueRequest(**r)
@@ -201,12 +273,10 @@ def update_request(request_id: str, data: IssueRequestUpdate) -> Optional[IssueR
 
 
 def update_ai_fields(request_id: str, ai_result: AIAnalysisResult) -> Optional[IssueRequest]:
-    """Persist AI analysis results onto an existing request record."""
     records = _load()
     for i, r in enumerate(records):
         if r.get("id") != request_id:
             continue
-
         r["aiSummary"]    = ai_result.aiSummary
         r["aiCategory"]   = ai_result.predictedCategory
         r["aiPriority"]   = ai_result.predictedPriority
@@ -217,20 +287,18 @@ def update_ai_fields(request_id: str, ai_result: AIAnalysisResult) -> Optional[I
         r["aiAnalyzedAt"] = _now()
         r["updatedAt"]    = _now()
         _backfill(r)
+        _enrich_sla(r)
         records[i] = r
         _save(records)
         return IssueRequest(**r)
-
     return None
 
 
 def update_copilot_fields(request_id: str, result: CopilotResult) -> Optional[IssueRequest]:
-    """Persist copilot results onto an existing request record."""
     records = _load()
     for i, r in enumerate(records):
         if r.get("id") != request_id:
             continue
-
         r["copilotSummary"]             = result.copilotSummary
         r["copilotSuggestedActions"]    = result.copilotSuggestedActions
         r["copilotResolutionSteps"]     = result.copilotResolutionSteps
@@ -245,10 +313,10 @@ def update_copilot_fields(request_id: str, result: CopilotResult) -> Optional[Is
         r["copilotGeneratedAt"]         = result.copilotGeneratedAt
         r["updatedAt"]                  = _now()
         _backfill(r)
+        _enrich_sla(r)
         records[i] = r
         _save(records)
         return IssueRequest(**r)
-
     return None
 
 

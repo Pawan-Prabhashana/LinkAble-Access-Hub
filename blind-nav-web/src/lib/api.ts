@@ -5,6 +5,7 @@ import {
   AIAnalysisResult,
   CopilotResult,
 } from '@/types/request';
+import { Alert, SlaStats } from '@/types/alert';
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://192.168.8.141:8000';
@@ -22,7 +23,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  // ── Requests ────────────────────────────────────────────────────────────────
+  // ── Requests ──────────────────────────────────────────────────────────────
 
   getRequests(): Promise<IssueRequest[]> {
     return request<IssueRequest[]>('/requests');
@@ -46,7 +47,7 @@ export const api = {
     });
   },
 
-  // ── AI (Phase 2) ─────────────────────────────────────────────────────────────
+  // ── AI (Phase 2) ──────────────────────────────────────────────────────────
 
   analyzeText(text: string, title?: string, location?: string): Promise<AIAnalysisResult> {
     return request<AIAnalysisResult>('/ai/analyze', {
@@ -59,27 +60,15 @@ export const api = {
     return request<IssueRequest>(`/requests/${id}/analyze`, { method: 'POST' });
   },
 
-  // ── Copilot (Phase 3) ─────────────────────────────────────────────────────────
+  // ── Copilot (Phase 3) ─────────────────────────────────────────────────────
 
-  /**
-   * Trigger (or re-trigger) the copilot / agentic workflow for an existing request.
-   * Returns the full updated IssueRequest with copilot fields populated.
-   */
   generateCopilot(id: string): Promise<IssueRequest> {
     return request<IssueRequest>(`/requests/${id}/copilot`, { method: 'POST' });
   },
 
-  /**
-   * Standalone copilot generation — accepts raw fields, returns CopilotResult.
-   * Useful for live preview before a request is saved.
-   */
   generateCopilotPreview(payload: {
-    title: string;
-    description: string;
-    aiCategory?: string;
-    aiPriority?: string;
-    aiSummary?: string;
-    location?: string;
+    title: string; description: string; aiCategory?: string;
+    aiPriority?: string; aiSummary?: string; location?: string;
   }): Promise<CopilotResult> {
     return request<CopilotResult>('/copilot/generate', {
       method: 'POST',
@@ -87,7 +76,39 @@ export const api = {
     });
   },
 
-  // ── Health ───────────────────────────────────────────────────────────────────
+  // ── Alerts (Phase 4) ──────────────────────────────────────────────────────
+
+  getAlerts(unreadOnly = false): Promise<Alert[]> {
+    return request<Alert[]>(`/alerts${unreadOnly ? '?unread_only=true' : ''}`);
+  },
+
+  getAlertCount(): Promise<{ unread: number }> {
+    return request<{ unread: number }>('/alerts/count');
+  },
+
+  markAlertRead(id: string): Promise<{ ok: boolean }> {
+    return request<{ ok: boolean }>(`/alerts/${id}/read`, { method: 'POST' });
+  },
+
+  markAllAlertsRead(): Promise<{ marked: number }> {
+    return request<{ marked: number }>('/alerts/read-all', { method: 'POST' });
+  },
+
+  // ── SLA (Phase 4) ─────────────────────────────────────────────────────────
+
+  getSlaStats(): Promise<SlaStats> {
+    return request<SlaStats>('/sla/stats');
+  },
+
+  refreshSla(): Promise<{ checked: number; updated: number; alertsCreated: number }> {
+    return request('/sla/refresh', { method: 'POST' });
+  },
+
+  getSlaConfig(): Promise<{ demoMode: boolean; windows: Record<string, number> }> {
+    return request('/sla/config');
+  },
+
+  // ── Health ────────────────────────────────────────────────────────────────
 
   healthCheck(): Promise<{ status: string }> {
     return request<{ status: string }>('/health');

@@ -44,7 +44,7 @@ class IssueRequest(BaseModel):
     timestamp: str
     updatedAt: Optional[str] = None
 
-    # ── Phase 2: AI analysis fields ──────────────────────────────────────────
+    # ── Phase 2: AI analysis ─────────────────────────────────────────────────
     aiSummary: Optional[str] = None
     aiCategory: Optional[str] = None
     aiPriority: Optional[str] = None
@@ -55,16 +55,26 @@ class IssueRequest(BaseModel):
     aiAnalyzedAt: Optional[str] = None
     suggestedAction: Optional[str] = None
 
-    # ── Phase 3: Copilot / agentic workflow fields ───────────────────────────
+    # ── Phase 3: Copilot / agentic workflow ──────────────────────────────────
     copilotSummary: Optional[str] = None
     copilotSuggestedActions: Optional[List[str]] = None
     copilotResolutionSteps: Optional[List[str]] = None
     copilotRecommendedTeam: Optional[str] = None
     copilotRecommendedAssignee: Optional[str] = None
-    copilotEscalationLevel: Optional[str] = None      # NORMAL | URGENT | CRITICAL | ESCALATE
+    copilotEscalationLevel: Optional[str] = None
     copilotShouldAlert: Optional[bool] = None
     copilotAlertReason: Optional[str] = None
     copilotDraftInternalNote: Optional[str] = None
     copilotDecisionTrace: Optional[List[str]] = None
-    copilotEngine: Optional[str] = None               # 'rules' | 'llm'
+    copilotEngine: Optional[str] = None
     copilotGeneratedAt: Optional[str] = None
+
+    # ── Phase 4: SLA tracking ────────────────────────────────────────────────
+    slaTargetAt: Optional[str] = None          # ISO datetime — deadline
+    slaStatus: Optional[str] = None            # ON_TRACK | AT_RISK | BREACHED | COMPLETED
+    slaMinutesRemaining: Optional[float] = None  # Computed on fetch; negative = overdue
+
+    # ── Phase 4: Escalation tracking ────────────────────────────────────────
+    escalationLevel: Optional[str] = None      # NONE | TEAM_LEAD | OPERATIONS_MANAGER | EMERGENCY_RESPONSE
+    escalatedAt: Optional[str] = None
+    lastEscalationReason: Optional[str] = None

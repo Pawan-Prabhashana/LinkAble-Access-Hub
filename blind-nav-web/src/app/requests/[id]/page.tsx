@@ -12,6 +12,8 @@ import PriorityBadge from '@/components/ui/PriorityBadge';
 import SourceBadge from '@/components/ui/SourceBadge';
 import AiInsightsPanel from '@/components/ui/AiInsightsPanel';
 import CopilotPanel from '@/components/ui/CopilotPanel';
+import SlaBadge from '@/components/ui/SlaBadge';
+import EscalationBadge from '@/components/ui/EscalationBadge';
 import {
   ArrowLeft, MapPin, Clock, User, Mic, RefreshCw,
   CheckCircle2, ChevronRight, MessageSquarePlus, AlertTriangle,
@@ -226,6 +228,35 @@ export default function RequestDetailPage() {
               />
             </div>
           </Section>
+
+          {/* SLA + Escalation */}
+          {(request.slaStatus || request.escalationLevel) && (
+            <div className={`rounded-xl p-5 shadow-sm ring-1 ${
+              request.slaStatus === 'BREACHED'
+                ? 'bg-red-50 ring-red-200'
+                : request.slaStatus === 'AT_RISK'
+                  ? 'bg-amber-50 ring-amber-200'
+                  : 'bg-white ring-slate-100'
+            }`}>
+              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                SLA &amp; Escalation
+              </h3>
+              <div className="flex flex-wrap items-center gap-3">
+                <SlaBadge slaStatus={request.slaStatus} slaMinutesRemaining={request.slaMinutesRemaining} />
+                <EscalationBadge level={request.escalationLevel} />
+              </div>
+              {request.slaTargetAt && (
+                <p className="mt-2 text-xs text-slate-400">
+                  SLA target: {new Date(request.slaTargetAt).toLocaleString()}
+                </p>
+              )}
+              {request.lastEscalationReason && (
+                <p className="mt-1 rounded-md bg-orange-50 px-3 py-1.5 text-xs text-orange-700">
+                  {request.lastEscalationReason}
+                </p>
+              )}
+            </div>
+          )}
 
           {/* AI Insights */}
           <div className="rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-100">

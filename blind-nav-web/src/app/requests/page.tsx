@@ -11,6 +11,8 @@ import StatusBadge from '@/components/ui/StatusBadge';
 import PriorityBadge from '@/components/ui/PriorityBadge';
 import SourceBadge from '@/components/ui/SourceBadge';
 import AiCategoryBadge from '@/components/ui/AiCategoryBadge';
+import SlaBadge from '@/components/ui/SlaBadge';
+import EscalationBadge from '@/components/ui/EscalationBadge';
 import { PlusCircle, Search, RefreshCw, ArrowRight, SlidersHorizontal, Sparkles } from 'lucide-react';
 
 const STATUS_OPTIONS   = ['', 'NEW', 'ASSIGNED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'];
@@ -186,6 +188,7 @@ function RequestsContent() {
                 <th className="px-4 py-3 text-left">Priority</th>
                 <th className="px-4 py-3 text-left">Status</th>
                 <th className="px-4 py-3 text-left">Source</th>
+                <th className="px-4 py-3 text-left">SLA</th>
                 <th className="px-4 py-3 text-left">Time</th>
                 <th className="px-4 py-3 text-left">Assignee</th>
                 <th className="px-4 py-3" />
@@ -193,7 +196,10 @@ function RequestsContent() {
             </thead>
             <tbody className="divide-y divide-slate-50">
               {filtered.map((r) => (
-                <tr key={r.id} className="transition-colors hover:bg-slate-50">
+                <tr key={r.id} className={`transition-colors hover:bg-slate-50 ${
+                  r.slaStatus === 'BREACHED' ? 'border-l-4 border-red-400 bg-red-50/30' :
+                  r.slaStatus === 'AT_RISK'  ? 'border-l-4 border-amber-400 bg-amber-50/20' : ''
+                }`}>
                   <td className="px-6 py-4">
                     <p className="max-w-xs truncate font-semibold text-slate-800">{r.title}</p>
 
@@ -223,6 +229,14 @@ function RequestsContent() {
                         {AI_CATEGORY_LABELS[r.category] ?? r.category}
                       </span>
                     )}
+                  </td>
+
+                  {/* SLA */}
+                  <td className="px-4 py-4">
+                    <div className="flex flex-col gap-1">
+                      <SlaBadge slaStatus={r.slaStatus} slaMinutesRemaining={r.slaMinutesRemaining} size="sm" />
+                      <EscalationBadge level={r.escalationLevel} size="sm" />
+                    </div>
                   </td>
 
                   {/* Priority — show AI priority if it differs from user-set */}
