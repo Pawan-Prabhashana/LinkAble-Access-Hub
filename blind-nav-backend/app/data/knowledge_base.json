@@ -1,0 +1,122 @@
+[
+  {
+    "id": "kb-001",
+    "title": "Physical Obstruction — Standard Clearance Procedure",
+    "categories": ["PHYSICAL_OBSTRUCTION"],
+    "tags": ["obstruction", "blocked", "pathway", "bench", "furniture", "clearance", "hallway"],
+    "sop_ref": "SOP-ACC-001",
+    "priority_relevance": ["HIGH", "CRITICAL", "MEDIUM"],
+    "content": "When a physical obstruction is reported on an accessible pathway: (1) Dispatch Facilities Team to the reported location within 15 minutes for HIGH/CRITICAL priority. (2) If obstruction cannot be immediately cleared, establish an alternative accessible route and communicate it to affected users. (3) Place directional signage to guide users around the obstruction. (4) For heavy objects, coordinate with Facilities and obtain appropriate equipment. (5) Document the obstruction cause and implement measures to prevent recurrence. (6) Notify the Access Officer upon resolution.",
+    "resolution_time": "30–60 minutes for standard obstructions"
+  },
+  {
+    "id": "kb-002",
+    "title": "Navigation Assistance Protocol",
+    "categories": ["NAVIGATION_ASSISTANCE"],
+    "tags": ["navigation", "assistance", "guide", "blind", "visually impaired", "escort", "wayfinding"],
+    "sop_ref": "SOP-ACC-002",
+    "priority_relevance": ["HIGH", "CRITICAL", "MEDIUM"],
+    "content": "For navigation assistance requests: (1) Acknowledge the request immediately and confirm the current location of the person requiring assistance. (2) Dispatch the nearest available Navigation Assistance Team member within 5 minutes. (3) When meeting the person: introduce yourself, ask how they prefer to be assisted (sighted guide vs verbal directions), and ask if they use a guide dog. (4) For exam-related assistance, coordinate with the Examinations Office for any time extensions if delay occurred. (5) Familiar routes should be described verbally with clear landmarks. (6) Do not take the person's arm without permission — offer your elbow instead.",
+    "resolution_time": "5–15 minutes response time"
+  },
+  {
+    "id": "kb-003",
+    "title": "Accessible Entrance Blockage — Emergency Response",
+    "categories": ["FACILITY_ACCESS_ISSUE", "PHYSICAL_OBSTRUCTION"],
+    "tags": ["entrance", "blocked", "construction", "accessible", "door", "ramp", "access"],
+    "sop_ref": "SOP-ACC-003",
+    "priority_relevance": ["CRITICAL", "HIGH"],
+    "content": "When an accessible entrance is blocked: (1) This constitutes a CRITICAL accessibility breach — response must begin immediately. (2) Contact the Site Manager and Head of Facilities within 5 minutes. (3) Identify and open the nearest alternative accessible entrance within the facility. (4) Station a staff member at both the blocked entrance and the alternative to direct users. (5) For construction-related blockages, the contractor is legally required to maintain accessible routes — issue a formal notice if not complied with. (6) Post accessible route redirection notices at all approach points. (7) Notify the Disability Services Office and Student Services of the situation.",
+    "resolution_time": "Immediate redirection; full restoration within 2 hours"
+  },
+  {
+    "id": "kb-004",
+    "title": "Elevator Accessibility Equipment Failure",
+    "categories": ["ACCESSIBILITY_EQUIPMENT_ISSUE"],
+    "tags": ["elevator", "lift", "voice guidance", "audio", "failure", "not working", "braille", "panel"],
+    "sop_ref": "SOP-ACC-004",
+    "priority_relevance": ["HIGH", "CRITICAL"],
+    "content": "For elevator accessibility equipment failure: (1) Immediately log a Facilities maintenance ticket with HIGH or CRITICAL priority. (2) Contact the elevator maintenance contractor — accessibility features must be treated as urgent repairs. (3) While repairs are underway, station a Facilities staff member at the elevator to provide manual assistance (announcing floors, assisting door operation). (4) If elevator is in a multi-floor building, provide a manual escort alternative for floor access. (5) For voice guidance failures specifically: check if it is a software/firmware issue (resettable remotely) or a hardware failure (requires on-site technician). (6) Update the facilities management system and provide estimated repair time to all officers.",
+    "resolution_time": "Software issues: 30–60 minutes. Hardware: 2–4 hours with contractor callout"
+  },
+  {
+    "id": "kb-005",
+    "title": "Wet Floor / Hazardous Surface Near Accessible Route",
+    "categories": ["UNSAFE_ENVIRONMENT"],
+    "tags": ["wet floor", "slippery", "hazard", "water", "spill", "ramp", "surface", "safety"],
+    "sop_ref": "SOP-SAF-001",
+    "priority_relevance": ["HIGH", "CRITICAL", "MEDIUM"],
+    "content": "For wet floor or hazardous surface reports near accessible routes: (1) Deploy wet floor warning signs immediately — this must occur within 5 minutes of the report. (2) If the hazard is on or immediately adjacent to a wheelchair ramp or accessible path, this is HIGH priority. (3) Contact Cleaning Services for immediate remediation. (4) If water source is a leak, contact Facilities Maintenance to stop the source. (5) For ramps: if surface is dangerously slippery, close the ramp to use and provide an alternative accessible route. (6) Check for root cause — blocked drains, leaking pipes, cleaning spillage. (7) Document with photographs if possible.",
+    "resolution_time": "Signage: immediate. Cleanup: 15–30 minutes"
+  },
+  {
+    "id": "kb-006",
+    "title": "Emergency Accessibility Response Protocol",
+    "categories": ["EMERGENCY_SUPPORT"],
+    "tags": ["emergency", "distress", "stranded", "help", "urgent", "person in distress", "welfare"],
+    "sop_ref": "SOP-ACC-006",
+    "priority_relevance": ["CRITICAL"],
+    "content": "For emergency accessibility support requests: (1) This is CRITICAL — dispatch Emergency Response Team immediately. (2) Contact Security Control Room to coordinate response. (3) Send the nearest available officer to the location — do not wait for a specialist if someone is in distress. (4) If the person is in a physically dangerous location (near stairs, in an unsafe area), prioritise their immediate safety. (5) Contact Campus Medical Services if any physical harm is involved. (6) Notify the Head of Security and Disability Services. (7) After the incident, file a full incident report within 2 hours. (8) All emergency accessibility incidents must be reviewed at the next Disability Services committee meeting.",
+    "resolution_time": "Response within 2 minutes of alert"
+  },
+  {
+    "id": "kb-007",
+    "title": "Tactile Path and Guidance System Maintenance",
+    "categories": ["PHYSICAL_OBSTRUCTION", "ACCESSIBILITY_EQUIPMENT_ISSUE"],
+    "tags": ["tactile", "braille", "guidance path", "floor markers", "tactile paving", "obstruction"],
+    "sop_ref": "SOP-ACC-007",
+    "priority_relevance": ["MEDIUM", "HIGH"],
+    "content": "For reports of tactile path obstructions or damage: (1) Tactile guidance paths are primary wayfinding infrastructure for visually impaired users — treat obstructions as HIGH priority. (2) Remove temporary obstructions (signage, furniture, cables) immediately without waiting for authorization. (3) For damaged tactile paving or floor markers, contact Facilities Maintenance with a maintenance ticket. (4) Temporary obstructions must never be placed on tactile paths — issue guidance to event organizers and cleaning staff. (5) If the tactile path is the only navigation route for a section, it must be kept clear at all times. (6) Schedule quarterly inspection of all tactile paths.",
+    "resolution_time": "Temporary obstruction: immediate. Permanent damage repair: schedule within 48 hours"
+  },
+  {
+    "id": "kb-008",
+    "title": "Accessible Parking — Enforcement Procedure",
+    "categories": ["FACILITY_ACCESS_ISSUE"],
+    "tags": ["parking", "accessible", "permit", "vehicle", "enforcement", "bay", "disabled"],
+    "sop_ref": "SOP-SEC-002",
+    "priority_relevance": ["MEDIUM", "HIGH"],
+    "content": "For accessible parking bay violations: (1) Security Officer to attend the location and verify the vehicle does not have an accessible parking permit. (2) Issue a parking notice on the vehicle. (3) If the vehicle owner can be identified via campus registration, contact them immediately to relocate the vehicle. (4) Document the vehicle registration, time of arrival, and response actions. (5) If the bay has been occupied for more than 30 minutes and the owner cannot be contacted, contact Campus Security management for escalation to a tow order. (6) During peak periods, Security should conduct proactive patrols of accessible parking bays.",
+    "resolution_time": "30–60 minutes for vehicle relocation"
+  },
+  {
+    "id": "kb-009",
+    "title": "Poor Lighting — Accessibility and Safety Response",
+    "categories": ["UNSAFE_ENVIRONMENT"],
+    "tags": ["lighting", "dark", "poor lighting", "corridor", "visibility", "hazard", "lux"],
+    "sop_ref": "SOP-SAF-002",
+    "priority_relevance": ["MEDIUM", "HIGH"],
+    "content": "For poor lighting reports affecting accessible areas: (1) Assess whether the affected area is on an accessible route or in a safety-critical zone. If yes, treat as HIGH priority. (2) Contact Facilities Electrical team for immediate investigation. (3) If multiple fixtures are out, this may indicate a circuit fault — electrical team must check for safety. (4) While repairs are pending, consider portable lighting equipment for critical areas. (5) For areas used by visually impaired students, ensure lighting meets minimum accessibility standards (minimum 300 lux in corridors, 500 lux in study areas). (6) Check if the issue is a bulb replacement or a wiring/circuit issue.",
+    "resolution_time": "Bulb replacement: 1–2 hours. Circuit fault: 2–4 hours with electrician"
+  },
+  {
+    "id": "kb-010",
+    "title": "Ramp Maintenance and Surface Standards",
+    "categories": ["ACCESSIBILITY_EQUIPMENT_ISSUE"],
+    "tags": ["ramp", "wheelchair", "surface", "cracking", "maintenance", "anti-slip", "resurfacing"],
+    "sop_ref": "SOP-ACC-010",
+    "priority_relevance": ["LOW", "MEDIUM"],
+    "content": "For wheelchair ramp maintenance reports: (1) Visually inspect the ramp for cracks, surface degradation, edge damage, or handrail issues. (2) Minor surface cracks (< 5mm, no raised edges): schedule maintenance within 7 days, mark as LOW priority. (3) Significant cracks or raised edges: schedule maintenance within 24 hours, mark as MEDIUM priority. (4) Any structural damage to the ramp frame or handrails: close the ramp immediately and contact Facilities for emergency repair. (5) Anti-slip surface standards: all accessible ramps must meet a surface roughness of R11 or higher. (6) After any significant rainfall, ramps should be inspected for surface damage.",
+    "resolution_time": "Cosmetic: 7 days. Structural: 24–48 hours"
+  },
+  {
+    "id": "kb-011",
+    "title": "Accessibility Signage Damage and Replacement",
+    "categories": ["FACILITY_ACCESS_ISSUE"],
+    "tags": ["signage", "sign", "direction", "navigation", "damaged", "missing", "accessibility symbol"],
+    "sop_ref": "SOP-ACC-011",
+    "priority_relevance": ["LOW", "MEDIUM"],
+    "content": "For damaged or missing accessibility signage: (1) Photograph the damaged/missing sign location for documentation. (2) If the sign is on a primary accessible route or at a decision point (e.g., entrance, junction), treat as MEDIUM priority and replace within 24 hours. (3) Contact the Campus Signage team for replacement. (4) In the interim, provide verbal or printed temporary direction notices if the location serves visually impaired users. (5) Ensure replacement signs meet accessibility standards: appropriate height (1.5m), high contrast, tactile elements where required, and visible accessibility symbol. (6) Update the campus accessibility map if a new sign location is established.",
+    "resolution_time": "Critical route signs: 24 hours. Non-critical: 5–7 days"
+  },
+  {
+    "id": "kb-012",
+    "title": "SLA Response Time Guidelines — Accessibility Requests",
+    "categories": ["PHYSICAL_OBSTRUCTION", "FACILITY_ACCESS_ISSUE", "NAVIGATION_ASSISTANCE", "ACCESSIBILITY_EQUIPMENT_ISSUE", "UNSAFE_ENVIRONMENT", "EMERGENCY_SUPPORT"],
+    "tags": ["sla", "response time", "priority", "guidelines", "escalation", "target"],
+    "sop_ref": "SOP-OPS-001",
+    "priority_relevance": ["CRITICAL", "HIGH", "MEDIUM", "LOW"],
+    "content": "Accessibility Request SLA Guidelines: CRITICAL (Emergency/life safety) — First response within 2 minutes, resolution target 15 minutes. HIGH (Major access barrier, equipment failure) — First response within 15 minutes, resolution target 2 hours. MEDIUM (Significant inconvenience, non-critical equipment) — First response within 1 hour, resolution target 8 hours. LOW (Minor issue, no immediate access impact) — First response within 4 hours, resolution target 24 hours. Escalation triggers: Unassigned CRITICAL requests after 5 minutes → Emergency Response. Unassigned HIGH requests after 30 minutes → Team Lead. SLA breach on any active request → Operations Manager notification. All escalations must be logged in the request activity notes.",
+    "resolution_time": "See guidelines above"
+  }
+]

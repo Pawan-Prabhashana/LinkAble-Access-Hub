@@ -4,9 +4,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, ClipboardList, PlusCircle,
-  Settings, Accessibility, ChevronRight, Bell,
+  Bell, Map, Send, Accessibility,
+  ChevronRight,
 } from 'lucide-react';
 import { useAlerts } from '@/hooks/useAlerts';
+import RoleSelector from './RoleSelector';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -16,10 +18,12 @@ export default function Sidebar() {
     href === '/' ? pathname === '/' : pathname.startsWith(href);
 
   const navItems = [
-    { label: 'Dashboard',    href: '/',             icon: LayoutDashboard },
-    { label: 'All Requests', href: '/requests',      icon: ClipboardList   },
-    { label: 'New Request',  href: '/requests/new',  icon: PlusCircle      },
-    { label: 'Alerts',       href: '/alerts',        icon: Bell, badge: unreadCount > 0 ? unreadCount : undefined },
+    { label: 'Dashboard',       href: '/',                  icon: LayoutDashboard },
+    { label: 'All Requests',    href: '/requests',           icon: ClipboardList   },
+    { label: 'New Request',     href: '/requests/new',       icon: PlusCircle      },
+    { label: 'Map View',        href: '/map',                icon: Map             },
+    { label: 'Alerts',          href: '/alerts',             icon: Bell, badge: unreadCount > 0 ? unreadCount : undefined },
+    { label: 'Notifications',   href: '/notifications',      icon: Send            },
   ];
 
   return (
@@ -31,12 +35,12 @@ export default function Sidebar() {
         </div>
         <div>
           <p className="text-sm font-bold leading-tight text-white">AccessHub</p>
-          <p className="text-[10px] leading-tight text-slate-400">Request Platform</p>
+          <p className="text-[10px] leading-tight text-slate-400">LinkAble · Phase 5</p>
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4 scrollbar-thin">
+      <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-4 scrollbar-thin">
         <p className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-widest text-slate-500">
           Operations
         </p>
@@ -62,25 +66,19 @@ export default function Sidebar() {
                     {badge > 9 ? '9+' : badge}
                   </span>
                 )}
-                {active && !badge && <ChevronRight className="h-3.5 w-3.5 text-slate-500" />}
+                {active && badge == null && <ChevronRight className="h-3.5 w-3.5 text-slate-500" />}
               </span>
             </Link>
           );
         })}
       </nav>
 
-      {/* Footer */}
-      <div className="border-t border-slate-800 px-4 py-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-700 text-xs font-bold text-white">
-            AO
-          </div>
-          <div className="flex-1 truncate">
-            <p className="truncate text-xs font-semibold text-white">Access Officer</p>
-            <p className="truncate text-[10px] text-slate-400">Phase 4 · Hackathon</p>
-          </div>
-          <Settings className="h-4 w-4 cursor-pointer text-slate-500 hover:text-slate-300" />
-        </div>
+      {/* Role selector */}
+      <div className="border-t border-slate-800 px-3 py-3">
+        <p className="mb-1.5 px-2 text-[10px] font-semibold uppercase tracking-widest text-slate-500">
+          Active Role
+        </p>
+        <RoleSelector />
       </div>
     </aside>
   );

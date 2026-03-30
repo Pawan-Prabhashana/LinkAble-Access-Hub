@@ -36,6 +36,8 @@ def _backfill(r: dict) -> dict:
     r.setdefault("notes", [])
     r.setdefault("assignedTo", None)
     r.setdefault("location", None)
+    r.setdefault("lat", None)
+    r.setdefault("lng", None)
     r.setdefault("reportedBy", None)
     r.setdefault("updatedAt", None)
     r.setdefault("transcript", None)
@@ -146,6 +148,8 @@ def create_request(data: IssueRequestCreate) -> IssueRequest:
         status="NEW",
         source=source,
         location=data.location,
+        lat=data.lat,
+        lng=data.lng,
         reportedBy=data.reportedBy,
         assignedTo=None,
         notes=[],

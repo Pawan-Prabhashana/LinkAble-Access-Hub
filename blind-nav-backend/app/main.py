@@ -11,6 +11,8 @@ from app.routes.ai import router as ai_router
 from app.routes.copilot import router as copilot_router
 from app.routes.alerts import router as alerts_router
 from app.routes.sla import router as sla_router, _run_sla_check
+from app.routes.knowledge import router as knowledge_router
+from app.routes.notifications import router as notifications_router
 
 # ── Background SLA checker ────────────────────────────────────────────────────
 # Runs every 30 seconds in production, every 15 seconds in demo mode.
@@ -42,9 +44,11 @@ app = FastAPI(
     version="4.0.0",
     description=(
         "AI-powered Smart Service Request Platform. "
-        "Includes AI analysis (Part 2), GenAI copilot (Part 3), "
-        "and real-time SLA + alerts (Part 4)."
+        "AI analysis (Part 2) · GenAI copilot (Part 3) · "
+        "Real-time SLA + alerts (Part 4) · "
+        "RAG knowledge base, notifications, role views, map (Part 5)."
     ),
+    version="5.0.0",
     lifespan=lifespan,
 )
 
@@ -63,3 +67,5 @@ app.include_router(ai_router)
 app.include_router(copilot_router)
 app.include_router(alerts_router)
 app.include_router(sla_router)
+app.include_router(knowledge_router)
+app.include_router(notifications_router)

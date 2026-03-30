@@ -14,6 +14,8 @@ import AiInsightsPanel from '@/components/ui/AiInsightsPanel';
 import CopilotPanel from '@/components/ui/CopilotPanel';
 import SlaBadge from '@/components/ui/SlaBadge';
 import EscalationBadge from '@/components/ui/EscalationBadge';
+import GuidancePanel from '@/components/ui/GuidancePanel';
+import { KnowledgeArticle } from '@/types/notification';
 import {
   ArrowLeft, MapPin, Clock, User, Mic, RefreshCw,
   CheckCircle2, ChevronRight, MessageSquarePlus, AlertTriangle,
@@ -49,6 +51,8 @@ export default function RequestDetailPage() {
   const [analysing,  setAnalysing]  = useState(false);
   const [copiloting, setCopiloting] = useState(false);
   const [error,      setError]      = useState<string | null>(null);
+  const [guidance,   setGuidance]   = useState<KnowledgeArticle[]>([]);
+  const [guidanceLoading, setGuidanceLoading] = useState(false);
 
   // Update form state
   const [newStatus,   setNewStatus]   = useState('');
@@ -62,6 +66,12 @@ export default function RequestDetailPage() {
       const data = await api.getRequest(id);
       setRequest(data);
       setAssignee(data.assignedTo || '');
+      // Load relevant guidance in parallel
+      setGuidanceLoading(true);
+      api.getKnowledgeForRequest(id)
+        .then(g => setGuidance(g))
+        .catch(() => setGuidance([]))
+        .finally(() => setGuidanceLoading(false));
     } catch {
       setError('Request not found or server unavailable.');
     } finally {
@@ -306,6 +316,9 @@ export default function RequestDetailPage() {
 
         {/* ── Right: action panel ── */}
         <div className="space-y-5">
+
+          {/* ── RAG Guidance (Phase 5) ── */}
+          <GuidancePanel articles={guidance} loading={guidanceLoading} />
 
           {/* ── Operations Copilot (Phase 3) ── */}
           <CopilotPanel

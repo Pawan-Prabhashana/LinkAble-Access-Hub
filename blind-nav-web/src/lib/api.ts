@@ -6,6 +6,7 @@ import {
   CopilotResult,
 } from '@/types/request';
 import { Alert, SlaStats } from '@/types/alert';
+import { Notification, NotificationStats, KnowledgeArticle } from '@/types/notification';
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://192.168.8.141:8000';
@@ -106,6 +107,34 @@ export const api = {
 
   getSlaConfig(): Promise<{ demoMode: boolean; windows: Record<string, number> }> {
     return request('/sla/config');
+  },
+
+  // ── Knowledge Base (Phase 5) ──────────────────────────────────────────────
+
+  searchKnowledge(q: string, category?: string, priority?: string): Promise<KnowledgeArticle[]> {
+    const params = new URLSearchParams({ q });
+    if (category) params.set('category', category);
+    if (priority)  params.set('priority', priority);
+    return request<KnowledgeArticle[]>(`/knowledge/search?${params}`);
+  },
+
+  getKnowledgeForRequest(requestId: string): Promise<KnowledgeArticle[]> {
+    return request<KnowledgeArticle[]>(`/knowledge/request/${requestId}`);
+  },
+
+  // ── Notifications (Phase 5) ───────────────────────────────────────────────
+
+  getNotifications(channel?: string): Promise<Notification[]> {
+    const params = channel ? `?channel=${channel}` : '';
+    return request<Notification[]>(`/notifications${params}`);
+  },
+
+  getNotificationStats(): Promise<NotificationStats> {
+    return request<NotificationStats>('/notifications/stats');
+  },
+
+  simulateSend(notifId: string): Promise<{ ok: boolean }> {
+    return request<{ ok: boolean }>(`/notifications/${notifId}/send`, { method: 'POST' });
   },
 
   // ── Health ────────────────────────────────────────────────────────────────

@@ -72,7 +72,6 @@ def create_alert(data: dict) -> Alert:
 
     # Deduplicate
     if _already_recent(existing, data["type"], data.get("requestId")):
-        # Return a stub — no write
         return Alert(**data)
 
     data.setdefault("id", str(uuid.uuid4()))
@@ -82,7 +81,16 @@ def create_alert(data: dict) -> Alert:
 
     existing.append(data)
     _save(existing)
-    return Alert(**data)
+    alert = Alert(**data)
+
+    # Fire simulated notifications for this alert
+    try:
+        from app.services.notification_service import create_from_alert
+        create_from_alert(alert)
+    except Exception:
+        pass  # Never let notification errors break alert creation
+
+    return alert
 
 
 def create_alerts_bulk(alerts: list[dict]) -> list[Alert]:
@@ -99,6 +107,12 @@ def create_alerts_bulk(alerts: list[dict]) -> list[Alert]:
         created.append(Alert(**data))
     if created:
         _save(existing)
+        try:
+            from app.services.notification_service import create_from_alert
+            for alert in created:
+                create_from_alert(alert)
+        except Exception:
+            pass
     return created
 
 

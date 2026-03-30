@@ -16,6 +16,8 @@ class IssueRequestCreate(BaseModel):
     category: Optional[str] = None
     priority: Optional[str] = None
     location: Optional[str] = None
+    lat: Optional[float] = None
+    lng: Optional[float] = None
     reportedBy: Optional[str] = None
     source: Optional[str] = None
 
@@ -38,6 +40,8 @@ class IssueRequest(BaseModel):
     status: str
     source: str
     location: Optional[str] = None
+    lat: Optional[float] = None
+    lng: Optional[float] = None
     reportedBy: Optional[str] = None
     assignedTo: Optional[str] = None
     notes: List[Note] = []

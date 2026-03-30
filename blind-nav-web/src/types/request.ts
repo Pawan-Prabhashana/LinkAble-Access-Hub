@@ -54,6 +54,8 @@ export interface IssueRequest {
   status: string;
   source: string;
   location?: string;
+  lat?: number;
+  lng?: number;
   reportedBy?: string;
   assignedTo?: string;
   notes: Note[];
