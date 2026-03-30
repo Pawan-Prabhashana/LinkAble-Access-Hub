@@ -41,14 +41,13 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="LinkAble Access Hub — Backend",
-    version="4.0.0",
+    version="5.0.0",
     description=(
         "AI-powered Smart Service Request Platform. "
         "AI analysis (Part 2) · GenAI copilot (Part 3) · "
         "Real-time SLA + alerts (Part 4) · "
         "RAG knowledge base, notifications, role views, map (Part 5)."
     ),
-    version="5.0.0",
     lifespan=lifespan,
 )
 
