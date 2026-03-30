@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+dist/
+build/
+*.egg
+.eggs/
+.pytest_cache/
+
+# FastAPI / data (do not commit test data to repo)
+blind-nav-backend/data/*.json
+
+# Node / Next.js
+node_modules/
+.next/
+.env.local
+.env
+*.env
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Expo / React Native
+blind-nav-frontend/node_modules/
+blind-nav-frontend/.expo/
+blind-nav-frontend/dist/
+
+# YOLO / model weights (large binary files)
+*.pt
+*.weights
+blind-nav-backend/models/

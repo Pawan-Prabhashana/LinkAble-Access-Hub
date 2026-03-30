@@ -1,0 +1,95 @@
+import {
+  IssueRequest,
+  CreateRequestPayload,
+  UpdateRequestPayload,
+  AIAnalysisResult,
+  CopilotResult,
+} from '@/types/request';
+
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://192.168.8.141:8000';
+
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(`${BASE_URL}${path}`, {
+    headers: { 'Content-Type': 'application/json', ...init?.headers },
+    ...init,
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`API error ${res.status}: ${text}`);
+  }
+  return res.json() as Promise<T>;
+}
+
+export const api = {
+  // ── Requests ────────────────────────────────────────────────────────────────
+
+  getRequests(): Promise<IssueRequest[]> {
+    return request<IssueRequest[]>('/requests');
+  },
+
+  getRequest(id: string): Promise<IssueRequest> {
+    return request<IssueRequest>(`/requests/${id}`);
+  },
+
+  createRequest(payload: CreateRequestPayload): Promise<IssueRequest> {
+    return request<IssueRequest>('/requests', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+
+  updateRequest(id: string, payload: UpdateRequestPayload): Promise<IssueRequest> {
+    return request<IssueRequest>(`/requests/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    });
+  },
+
+  // ── AI (Phase 2) ─────────────────────────────────────────────────────────────
+
+  analyzeText(text: string, title?: string, location?: string): Promise<AIAnalysisResult> {
+    return request<AIAnalysisResult>('/ai/analyze', {
+      method: 'POST',
+      body: JSON.stringify({ text, title, location }),
+    });
+  },
+
+  analyzeRequest(id: string): Promise<IssueRequest> {
+    return request<IssueRequest>(`/requests/${id}/analyze`, { method: 'POST' });
+  },
+
+  // ── Copilot (Phase 3) ─────────────────────────────────────────────────────────
+
+  /**
+   * Trigger (or re-trigger) the copilot / agentic workflow for an existing request.
+   * Returns the full updated IssueRequest with copilot fields populated.
+   */
+  generateCopilot(id: string): Promise<IssueRequest> {
+    return request<IssueRequest>(`/requests/${id}/copilot`, { method: 'POST' });
+  },
+
+  /**
+   * Standalone copilot generation — accepts raw fields, returns CopilotResult.
+   * Useful for live preview before a request is saved.
+   */
+  generateCopilotPreview(payload: {
+    title: string;
+    description: string;
+    aiCategory?: string;
+    aiPriority?: string;
+    aiSummary?: string;
+    location?: string;
+  }): Promise<CopilotResult> {
+    return request<CopilotResult>('/copilot/generate', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+
+  // ── Health ───────────────────────────────────────────────────────────────────
+
+  healthCheck(): Promise<{ status: string }> {
+    return request<{ status: string }>('/health');
+  },
+};

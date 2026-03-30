@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "blind-nav-frontend",
+    "slug": "blind-nav-frontend",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSSpeechRecognitionUsageDescription": "Allow $(PRODUCT_NAME) to use speech recognition.",
+        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to use the microphone."
+      },
+      "bundleIdentifier": "com.example.blindnavfrontend"
+    },
+    "android": {
+      "package": "com.example.blindnavfrontend",
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "plugins": [
+      "expo-speech-recognition"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "76069f2c-3dc2-4ff1-9bec-8216fe42f660"
+      }
+    }
+  }
+}
