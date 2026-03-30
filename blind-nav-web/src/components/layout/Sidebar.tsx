@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, ClipboardList, PlusCircle,
-  Bell, Map, Send, Accessibility,
+  Bell, Map, Send, Accessibility, MessageSquare,
   ChevronRight,
 } from 'lucide-react';
 import { useAlerts } from '@/hooks/useAlerts';
@@ -21,6 +21,7 @@ export default function Sidebar() {
     { label: 'Dashboard',       href: '/',                  icon: LayoutDashboard },
     { label: 'All Requests',    href: '/requests',           icon: ClipboardList   },
     { label: 'New Request',     href: '/requests/new',       icon: PlusCircle      },
+    { label: 'AI Chat Intake',  href: '/chat',               icon: MessageSquare   },
     { label: 'Map View',        href: '/map',                icon: Map             },
     { label: 'Alerts',          href: '/alerts',             icon: Bell, badge: unreadCount > 0 ? unreadCount : undefined },
     { label: 'Notifications',   href: '/notifications',      icon: Send            },
@@ -35,7 +36,7 @@ export default function Sidebar() {
         </div>
         <div>
           <p className="text-sm font-bold leading-tight text-white">AccessHub</p>
-          <p className="text-[10px] leading-tight text-slate-400">LinkAble · Phase 5</p>
+          <p className="text-[10px] leading-tight text-slate-400">LinkAble · Phase 6</p>
         </div>
       </div>
 

@@ -1,5 +1,7 @@
 import asyncio
+import os
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,6 +15,30 @@ from app.routes.alerts import router as alerts_router
 from app.routes.sla import router as sla_router, _run_sla_check
 from app.routes.knowledge import router as knowledge_router
 from app.routes.notifications import router as notifications_router
+from app.routes.chat import router as chat_router
+
+
+def _auto_seed_if_empty() -> None:
+    """Seed demo data on startup if the requests store is empty."""
+    try:
+        from app.services.request_store import _load as _load_requests
+        if len(_load_requests()) > 0:
+            return
+        seed_script = Path(__file__).parent.parent / "scripts" / "seed.py"
+        if not seed_script.exists():
+            return
+        import subprocess, sys
+        env = {**os.environ, "PYTHONPATH": str(Path(__file__).parent.parent)}
+        result = subprocess.run(
+            [sys.executable, str(seed_script), "--clear"],
+            capture_output=True, text=True, env=env,
+        )
+        if result.returncode == 0:
+            print("[Startup] Auto-seeded demo data ✓")
+        else:
+            print(f"[Startup] Seed script error: {result.stderr[:200]}")
+    except Exception as exc:
+        print(f"[Startup] Auto-seed skipped: {exc}")
 
 # ── Background SLA checker ────────────────────────────────────────────────────
 # Runs every 30 seconds in production, every 15 seconds in demo mode.
@@ -30,6 +56,7 @@ async def _sla_checker_loop() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    _auto_seed_if_empty()
     task = asyncio.create_task(_sla_checker_loop())
     yield
     task.cancel()
@@ -41,12 +68,13 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="LinkAble Access Hub — Backend",
-    version="5.0.0",
+    version="6.0.0",
     description=(
         "AI-powered Smart Service Request Platform. "
         "AI analysis (Part 2) · GenAI copilot (Part 3) · "
         "Real-time SLA + alerts (Part 4) · "
-        "RAG knowledge base, notifications, role views, map (Part 5)."
+        "RAG knowledge base, notifications, role views, map (Part 5) · "
+        "AI Chat Intake (Part 6)."
     ),
     lifespan=lifespan,
 )
@@ -68,3 +96,4 @@ app.include_router(alerts_router)
 app.include_router(sla_router)
 app.include_router(knowledge_router)
 app.include_router(notifications_router)
+app.include_router(chat_router)

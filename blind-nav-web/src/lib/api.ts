@@ -7,9 +7,10 @@ import {
 } from '@/types/request';
 import { Alert, SlaStats } from '@/types/alert';
 import { Notification, NotificationStats, KnowledgeArticle } from '@/types/notification';
+import { ChatIntakeRequest, ChatIntakeResponse } from '@/types/chat';
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://192.168.8.141:8000';
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {
@@ -135,6 +136,15 @@ export const api = {
 
   simulateSend(notifId: string): Promise<{ ok: boolean }> {
     return request<{ ok: boolean }>(`/notifications/${notifId}/send`, { method: 'POST' });
+  },
+
+  // ── Chat Intake (Phase 6) ─────────────────────────────────────────────────
+
+  chatIntake(payload: ChatIntakeRequest): Promise<ChatIntakeResponse> {
+    return request<ChatIntakeResponse>('/ai/chat-intake', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
   },
 
   // ── Health ────────────────────────────────────────────────────────────────

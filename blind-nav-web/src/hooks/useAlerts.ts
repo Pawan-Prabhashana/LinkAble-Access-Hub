@@ -7,7 +7,7 @@
  * dashboard page) all share one 15-second poll instead of firing independently.
  */
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { Alert } from '@/types/alert';
 
