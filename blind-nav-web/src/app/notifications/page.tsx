@@ -75,7 +75,7 @@ export default function NotificationsPage() {
             Notification Centre
           </h1>
           <p className="mt-1 text-sm text-slate-500">
-            Simulated multi-channel notifications · Email · SMS · In-App · Push
+            Multi-channel notifications · Real emails sent to <strong>pawanprabhashana11@gmail.com</strong> when SMTP is configured
           </p>
         </div>
         <button onClick={load} className="flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors">
@@ -198,10 +198,18 @@ export default function NotificationsPage() {
         )}
       </div>
 
-      <p className="mt-4 text-center text-xs text-slate-300">
-        All notifications are simulated — no real emails or SMS messages are sent.
-        This demonstrates a production-grade notification architecture.
-      </p>
+      <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-5 py-3 flex items-start gap-3">
+        <Mail className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
+        <div>
+          <p className="text-xs font-semibold text-blue-800">Real email delivery</p>
+          <p className="text-xs text-blue-600 mt-0.5">
+            EMAIL channel notifications trigger real emails to <strong>pawanprabhashana11@gmail.com</strong> when
+            <code className="mx-1 rounded bg-blue-100 px-1 text-blue-700">SMTP_EMAIL</code> and
+            <code className="rounded bg-blue-100 px-1 text-blue-700">SMTP_PASSWORD</code> are set in the backend <code className="rounded bg-blue-100 px-1 text-blue-700">.env</code>.
+            SMS and Push remain simulated.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

@@ -191,16 +191,20 @@ def create_request(data: IssueRequestCreate) -> IssueRequest:
     existing.append(record.model_dump())
     _save(existing)
 
-    # Immediately fire a CRITICAL alert if applicable
+    # Fire alert + email for CRITICAL/HIGH requests
     _fire_creation_alert(record)
+
+    # Detect recurring issues at the same location and email if found
+    _check_and_email_recurring(record, existing)
 
     return record
 
 
 def _fire_creation_alert(record: IssueRequest) -> None:
-    """Create an immediate alert when a CRITICAL or EMERGENCY request is created."""
+    """Create an immediate alert + send email when a CRITICAL or HIGH request is created."""
     from app.services.alert_store import create_alert
     from app.services.sla_service import make_alert, get_sla_minutes
+    from app.services import email_service
 
     if record.priority == "CRITICAL" or record.aiCategory == "EMERGENCY_SUPPORT":
         sla_min = get_sla_minutes(record.priority)
@@ -211,6 +215,20 @@ def _fire_creation_alert(record: IssueRequest) -> None:
             f"A CRITICAL priority request has been submitted. SLA: {int(sla_min)} minutes. Immediate response required.",
             record.id,
         ))
+        # Send real email
+        try:
+            email_service.send_new_request_alert(
+                request_id=record.id,
+                title=record.title,
+                category=record.aiCategory or record.category,
+                priority=record.priority,
+                location=record.location,
+                description=record.description or "",
+                source=record.source,
+            )
+        except Exception as exc:
+            print(f"[Email] alert send failed: {exc}")
+
     elif record.priority == "HIGH":
         create_alert(make_alert(
             "CRITICAL_REQUEST_CREATED",
@@ -219,6 +237,69 @@ def _fire_creation_alert(record: IssueRequest) -> None:
             f"A HIGH priority accessibility request has been submitted. SLA window: {int(get_sla_minutes(record.priority))} minutes.",
             record.id,
         ))
+        # Send real email for HIGH too
+        try:
+            email_service.send_new_request_alert(
+                request_id=record.id,
+                title=record.title,
+                category=record.aiCategory or record.category,
+                priority=record.priority,
+                location=record.location,
+                description=record.description or "",
+                source=record.source,
+            )
+        except Exception as exc:
+            print(f"[Email] HIGH alert send failed: {exc}")
+
+
+def _location_matches(loc_a: Optional[str], loc_b: Optional[str]) -> bool:
+    """Fuzzy location match: share at least one meaningful word."""
+    if not loc_a or not loc_b:
+        return False
+    STOPWORDS = {"the", "a", "an", "in", "at", "on", "near", "of", "and", "or"}
+    tokens_a = {w.lower() for w in loc_a.split() if len(w) > 2 and w.lower() not in STOPWORDS}
+    tokens_b = {w.lower() for w in loc_b.split() if len(w) > 2 and w.lower() not in STOPWORDS}
+    return bool(tokens_a & tokens_b)
+
+
+def _check_and_email_recurring(new_record: IssueRequest, all_existing: list[dict]) -> None:
+    """
+    Check if similar issues (same category + overlapping location) exist in open
+    requests. If 2 or more are found, send a recurring-issue email.
+    """
+    from app.services import email_service
+
+    if not new_record.location:
+        return  # Can't group without a location
+
+    active_statuses = {"NEW", "ASSIGNED", "IN_PROGRESS"}
+    similar: list[str] = []
+
+    for r in all_existing:
+        if r.get("id") == new_record.id:
+            continue
+        if r.get("status") not in active_statuses:
+            continue
+        cat_match = (
+            r.get("category") == new_record.category
+            or r.get("aiCategory") == (new_record.aiCategory or new_record.category)
+        )
+        loc_match = _location_matches(new_record.location, r.get("location"))
+        if cat_match and loc_match:
+            similar.append(r.get("title", "Untitled"))
+
+    if len(similar) >= 1:   # 1 prior + this new one = recurring
+        try:
+            email_service.send_recurring_issue_alert(
+                new_request_id=new_record.id,
+                new_title=new_record.title,
+                location=new_record.location,
+                category=new_record.aiCategory or new_record.category,
+                prior_titles=similar,
+                count=len(similar) + 1,
+            )
+        except Exception as exc:
+            print(f"[Email] Recurring issue email failed: {exc}")
 
 
 def get_all_requests() -> list[IssueRequest]:

@@ -204,6 +204,18 @@ def generate_sla_alerts(
             f"Request has exceeded its SLA target. Priority: {priority}. Immediate action required.",
             request_id,
         ))
+        # Send real SLA breach email
+        try:
+            from app.services import email_service
+            email_service.send_sla_breach_email(
+                request_id=request_id,
+                title=title,
+                priority=priority,
+                location=None,
+                minutes_overdue=0,
+            )
+        except Exception as exc:
+            print(f"[Email] SLA breach email failed: {exc}")
 
     elif sla_status == "AT_RISK":
         alerts.append(make_alert(

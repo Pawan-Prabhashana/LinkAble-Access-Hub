@@ -1,11 +1,11 @@
 """
-Notification Service — maps alert events to simulated notification payloads.
+Notification Service — maps alert events to notification payloads.
 
-Each alert type triggers one or more notifications to relevant roles,
-across appropriate channels (EMAIL / SMS / IN_APP).
+Each alert type triggers one or more notifications to relevant roles
+across channels (EMAIL / SMS / IN_APP).
 
-This is a simulation layer — no real email or SMS is sent.
-The notifications are stored and visible in the Notification Centre UI.
+EMAIL channel notifications also trigger a REAL email via email_service
+(when SMTP credentials are configured in .env).
 """
 
 from __future__ import annotations
@@ -74,4 +74,39 @@ def create_from_alert(alert: object) -> list:
             "requestId":  request_id,
         })
 
-    return notification_store.create_notifications_bulk(payloads)
+    created = notification_store.create_notifications_bulk(payloads)
+
+    # Fire real email for every EMAIL-channel notification
+    _send_real_emails(payloads, alert_title, alert_message, request_id, alert)
+
+    return created
+
+
+def _send_real_emails(
+    payloads: list,
+    alert_title: str,
+    alert_message: str,
+    request_id: object,
+    alert: object,
+) -> None:
+    """Send actual emails for all EMAIL-channel notifications."""
+    from app.services import email_service
+
+    severity = getattr(alert, "severity", "HIGH")
+    req_id   = str(request_id) if request_id else None
+
+    for p in payloads:
+        if p.get("channel") != "EMAIL":
+            continue
+        try:
+            email_service.send_alert_email(
+                alert_title=alert_title,
+                alert_message=(
+                    f"{alert_message}\n\n"
+                    f"Intended recipient role: {p['recipient']}"
+                ),
+                request_id=req_id,
+                severity=severity,
+            )
+        except Exception as exc:
+            print(f"[Email] Notification email failed: {exc}")
